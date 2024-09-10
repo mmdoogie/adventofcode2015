@@ -1,20 +1,11 @@
+from itertools import groupby
+
 with open('data/aoc-2015-10.txt', encoding = 'utf-8') as f:
     dat = [x.strip('\n') for x in f.readlines()]
 
 def rle(s):
-    res = ''
-    last_c = ''
-    cnt = 0
-    for c in s:
-        if c != last_c:
-            if cnt > 0:
-                res += str(cnt) + last_c
-            last_c = c
-            cnt = 0
-        cnt += 1
-    if cnt > 0:
-        res += str(cnt) + last_c
-    return res
+    res = [str(len(list(g))) + k for k, g in groupby(s)]
+    return ''.join(res)
 
 def part1(output = True):
     enc = dat[0]
