@@ -1,3 +1,7 @@
+from functools import partial
+from itertools import count
+from multiprocessing import Pool
+
 from mrm.util import md5sum
 
 with open('data/aoc-2015-04.txt', encoding = 'utf-8') as f:
@@ -6,12 +10,17 @@ with open('data/aoc-2015-04.txt', encoding = 'utf-8') as f:
 def compute(num_zeros):
     start_match = '0' * num_zeros
     key = dat[0]
-    idx = 0
-    while True:
-        digest = md5sum(key + str(idx))
-        if digest.startswith(start_match):
-            return idx
-        idx += 1
+    with Pool(8) as pool:
+        it = pool.imap(partial(chk, start_match, key), count(), 1000)
+        for val in it:
+            if val is not None:
+                return val
+
+def chk(start_match, key, idx):
+    digest = md5sum(key + str(idx))
+    if digest.startswith(start_match):
+        return idx
+    return None
 
 def part1(output = True):
     return compute(5)
